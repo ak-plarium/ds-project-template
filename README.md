@@ -42,6 +42,8 @@ Every notebook's first cell must include:
 
 This will point the sources path to the `src` directory allowing for importing directly from sources.
 
+Locally, it will have no use. Proper installation using `make setup` will install the sources in ["editable" mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
+
 ### pytest
 
 We are using `pytest` for unittest discovery. The template include a simple unittest to check if everything works.
@@ -64,5 +66,40 @@ The hooks we have ensure:<br>
 2. Go to the directory where your project root will be created. No need to perform `mkdir [project-root]`.
 
     ```bash
-    cookiecutter 
+    cookiecutter https://github.com/ak-plarium/ds-project-template
     ```
+
+    You will be prompted to fill the details of the project.
+
+3. Next, `cd` into your new project directoy and run `make setup`. <br>
+    ```bash
+    cd [project_directory]
+    make setup
+    ```
+
+    This will:<br>
+    1. Initiate a git repo (Only if you have not already)
+    2. Create a venv
+    3. Install requirements from `pyporoject.toml` as an editable copy.
+    4. Install pre-commit and setup the local hooks.
+
+4. To test everything has installed properly, activate the venv and run tests.
+
+    ```bash
+    source .venv/bin/activate
+    pytest
+    ```
+
+    You should see:
+    ```bash
+    .                           [100%]
+    1 passed in 0.01s
+    ```
+
+## Syncing with DataBricks
+
+WIP
+
+## Contributing to this template
+
+Please contact the DS team.
