@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{cookiecutter.directory_name}}"
+version = "{{cookiecutter.version}}"
+description = "{{cookiecutter.description}}"
+readme = "README.md"
+authors = [
+    { name = "{{cookiecutter.author}}", email = "{{cookiecutter.author_email}}" }
+]
+dependencies = [
+]
+requires-python = ">={{cookiecutter.python_version}}"
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.5",
+    "pre_commit==4.2.0",
+    "google-cloud-bigquery==3.32.0",
+    "ipykernel==6.29.5",
+    "build==1.2.2.post1"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["{{cookiecutter.project_slug}}"]
+
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+testpaths = ["tests"]

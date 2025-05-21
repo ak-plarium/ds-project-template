@@ -1,0 +1,9 @@
+{
+    "directory_name": "my-new-project",
+    "description": "the awesomest project ever",
+    "project_slug": "my_new_project",
+    "python_version": "3.11",
+    "author": "your name goes here",
+    "author_email": "jane.doe@plarium.com",
+    "version": "0.1.0"
+}
