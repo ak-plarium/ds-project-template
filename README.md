@@ -12,11 +12,13 @@ The template is using [cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.
 ├── .pre-commit-config.yaml
 ├── Makefile
 ├── README.md
+├── data
 ├── notebooks
 │   ├── _init_.ipynb
 │   └── example.ipynb
 ├── pyproject.toml
 ├── pytest.ini
+├── reports
 ├── src
 │   └── {{cookiecutter.project_slug}}
 │       ├── __init__.py
@@ -56,6 +58,7 @@ The hooks we have ensure:<br>
 2. Running tests before we push to git.
 
 ## Using the template
+
 
 1. [Install cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/installation.html) it should NOT be installed in a specific virtual environment, rather it should be installed in the global python you have on your machine.
 
