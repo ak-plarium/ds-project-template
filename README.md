@@ -1,31 +1,36 @@
 # Plarium's DS Project Template
 
 This template is the agreed upon structure for DS projects for Plarium's DS.<br>
-It allows for developing sources offline in an IDE of one's choice and also allows working with DataBricks for extra fire-power 🔫
+It allows for:
+- Developing sources offline in an IDE of one's choice.
+- Working with DataBricks for extra fire-power 🔫.
+- Managing virtual environments and dependencies like pros.
+- Maintain documentation within the project.
 
 The template is using [cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/index.html).
 
 ## Template structure
 
 ```
-├── .gitignore
-├── .pre-commit-config.yaml
-├── Makefile
-├── README.md
+{{cookiecutter.project_name}}
 ├── data
 ├── notebooks
 │   ├── _init_.ipynb
 │   └── example.ipynb
-├── pyproject.toml
-├── pytest.ini
 ├── reports
 ├── src
 │   └── {{cookiecutter.project_slug}}
 │       ├── __init__.py
 │       └── util.py
-└── tests
-    ├── __init__.py
-    └── test_util.py
+├── tests
+│   ├── __init__.py
+│   └── test_util.py
+├── pyproject.toml
+├── pytest.ini
+├── Makefile
+├── README.md
+├── .gitignore
+└── .pre-commit-config.yaml
 ```
 
 ### `Makefile`
@@ -44,7 +49,7 @@ Every notebook's first cell must include:
 
 This will point the sources path to the `src` directory allowing for importing directly from sources.
 
-Locally, it will have no use. Proper installation using `make setup` will install the sources in ["editable" mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html).
+Locally, it will have no use. Proper installation using `make setup` will install the sources in ["editable"](https://setuptools.pypa.io/en/latest/userguide/development_mode.html) mode.
 
 ### pytest
 
@@ -52,7 +57,7 @@ We are using `pytest` for unittest discovery. The template include a simple unit
 
 ### `.pre-commit-config.yaml`
 
-Contains [`pre-commit`](https://pre-commit.com/) hooks.<br>
+Contains [pre-commit](https://pre-commit.com/) hooks.<br>
 The hooks we have ensure:<br>
 1. [`nbstripout`](https://github.com/kynan/nbstripout) to clean notebooks before they are pushed to a git repo. To keep results, make sure you create a report.
 2. Running tests before we push to git.
@@ -60,13 +65,18 @@ The hooks we have ensure:<br>
 ## Using the template
 
 
-1. [Install cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/installation.html) it should NOT be installed in a specific virtual environment, rather it should be installed in the global python you have on your machine.
+1. We recommend to install python 3.11:
+
+   ```
+   brew install python@3.11
+   ```
+1. [Install cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/installation.html). it should NOT be installed in a specific virtual environment, rather it should be installed in the global python you have on your machine.
 
     ```bash
-    pip install cookiecutter
+    python3.11 -m pip install cookiecutter
     ```
 
-2. Go to the directory where your project root will be created. No need to perform `mkdir [project-root]`.
+2. Go to the directory where your project root will be created and run:
 
     ```bash
     cookiecutter https://github.com/ak-plarium/ds-project-template
@@ -99,10 +109,60 @@ The hooks we have ensure:<br>
     1 passed in 0.01s
     ```
 
-## Syncing with DataBricks
+## Syncing your project with DataBricks
 
-WIP
+The sync is done with git, to perform the sync, you will need to have a git account.
 
-## Contributing to this template
+### Git SSH <> DataBricks setup
 
-Please contact the DS team.
+1. If you have not done so, set a ssh key for github, following the instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+
+2. Plarium uses SSO for the keys so you will have to authorize it for Plarium-repo. 
+   - Go to [github.com](https://github.com/)
+   - Under your profile image in the top right, click **Settings** > **SSH and GPG keys**. if your key is configured you should see this: 
+![SSH on the Github settings](./readme-images/ssh%20keys.png)
+
+   - Click the `Confgire SSO` drop down menu, and click authorize here:
+![Authorization popup](./readme-images/authorization.png)
+
+3. Create a **Personal Access Token** for DataBricks so that it can read your repos. 
+   - Go to: **Settings** > **Developer Settings** > **Personal access tokens**
+   - Choose **Tokens (classic)**. Click **Generate new token** > **Generate new token (classic)**. 
+   - Under the **Note** write `databricks` 
+   - Under **Expiration** choose `No Expiration`
+   - Under **Select Scopes** mark all of the `repo` scope. This is how your screen should look like this: ![pat setup](./readme-images/pat%20setup.png)
+   - Scroll down and click **Generate token**
+   - Copy the token from here:![github token](./readme-images/copy%20token.png)
+   - Click the **Configue SSO** and authorize (like you did with the SSH token).
+   - Go to databricks, under your profile choose **Settings** > **Linked accounts**
+   - Under **Git integration**, set **Git provider** to `GitHub`
+   - Choose **Personal access token**
+   - Under **Git provider username or email** enter your git username
+   - Paste the token from github under . Your screen should look like this: ![github token setup](./readme-images/github%20token%20setup.png)
+   - Click **Save**. Yay! 🥳
+
+### Sync a toy project
+
+1. Create some project using the cookiecutter template.
+
+2. Run `make setup` from the project folder.
+
+3. Create a repo on github with the same project name.
+
+4. Setup the remote and push.
+
+5. Go to databricks, under **Workspace** > **Repos** > **Your username** you should see a screen like this (with no repos):![databricks repos](./readme-images/databricks%20repos.png)
+
+6. Click **Create** > **Repo**, you should see a screen like this:![databricks add repo](./readme-images/databricks%20add%20repo.png)
+7. Fill up the information:
+   - Under **Git repository URL** paste the url of your repo.
+   - Under **Git provider** choose `GitHub`
+   - Under **Repository name** we recommend to write the name of the repo as it appears on GitHub. This is equivalent to `git clone`, if you supply another name the repo will be cloned under that name.
+   - Click **Create Repo**, your toy project should now be available.
+
+### Test it
+
+1. Go to the repo, choose **notebooks** > **example**
+2. Start a machine or choose one that is running. This can take time... ☕️.
+3. Run the 2 cells, it should print "Hello World!". You should see something like this:
+![result](./readme-images/toy%20project%20example.png)
