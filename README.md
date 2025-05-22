@@ -35,8 +35,17 @@ The template is using [cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.
 
 ### `Makefile`
 
-Standard way to automate actions in a direcory.<br>
-Running `make help` will detail the default actions.
+Standard way to automate actions in a direcory, for more information about make, visit [here](https://makefiletutorial.com/).<br>
+Running `make help` will detail the default actions:
+```
+{{cookiecutter.project_name}} repo common tasks:
+  make setup        - Create git, venv and install dev dependencies
+  make venv         - Create a virtual environment
+  make install-dev  - Install in editable mode with [dev] extras
+  make pre-commit   - Install and configure pre-commit hooks
+  make clean        - Uninstall the build, clean artifacts and delete the venv directory
+  make build        - Build the package for distribution.
+```
 
 ### `notebooks/_ini_.ipynb`
 
@@ -53,7 +62,7 @@ Locally, it will have no use. Proper installation using `make setup` will instal
 
 ### pytest
 
-We are using `pytest` for unittest discovery. The template include a simple unittest to check if everything works.
+We are using [pytest](https://docs.pytest.org/en/stable/) for unittest discovery. The template include a simple unittest to check if everything works.
 
 ### `.pre-commit-config.yaml`
 
@@ -64,12 +73,14 @@ The hooks we have ensure:<br>
 
 ## Using the template
 
-
-1. We recommend to install python 3.11:
+1. We recommend to install python 3.11 as it is the native distribution on DataBricks:
 
    ```
    brew install python@3.11
    ```
+   If you don't have `brew` installed visit [here](https://brew.sh/).
+
+   
 1. [Install cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/installation.html). it should NOT be installed in a specific virtual environment, rather it should be installed in the global python you have on your machine.
 
     ```bash
@@ -93,7 +104,7 @@ The hooks we have ensure:<br>
     This will:<br>
     1. Initiate a git repo (Only if you have not already)
     2. Create a venv
-    3. Install requirements from `pyporoject.toml` as an editable copy.
+    3. Install requirements from `pyporoject.toml` and the package itself as an editable copy.
     4. Install pre-commit and setup the local hooks.
 
 4. To test everything has installed properly, activate the venv and run tests.
@@ -124,6 +135,8 @@ The sync is done with git, to perform the sync, you will need to have a git acco
 
    - Click the `Confgire SSO` drop down menu, and click authorize here:
 ![Authorization popup](./readme-images/authorization.png)
+
+2. Create a new repo on DataBricks with the **same name as your project name**, push the local repo to the remote.
 
 3. Create a **Personal Access Token** for DataBricks so that it can read your repos. 
    - Go to: **Settings** > **Developer Settings** > **Personal access tokens**
@@ -163,6 +176,6 @@ The sync is done with git, to perform the sync, you will need to have a git acco
 ### Test it
 
 1. Go to the repo, choose **notebooks** > **example**
-2. Start a machine or choose one that is running. This can take time... ☕️.
+2. Start a machine or choose one that is running. This can take some time... ☕️.
 3. Run the 2 cells, it should print "Hello World!". You should see something like this:
 ![result](./readme-images/toy%20project%20example.png)
