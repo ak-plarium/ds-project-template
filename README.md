@@ -93,9 +93,10 @@ The hooks we have ensure:<br>
     cookiecutter https://github.com/ak-plarium/ds-project-template
     ```
 
-    You will be prompted to fill the details of the project.
+    You will be prompted to fill the details of the project - **Note:** to use an underscore (`_`) instead of a hyphen (`-`) in `project_slug`.
+    
 
-3. Next, `cd` into your new project directoy and run `make setup`. <br>
+4. Next, `cd` into your new project directoy and run `make setup`. <br>
     ```bash
     cd [project_directory]
     make setup
@@ -107,7 +108,7 @@ The hooks we have ensure:<br>
     3. Install requirements from `pyporoject.toml` and the package itself as an editable copy.
     4. Install pre-commit and setup the local hooks.
 
-4. To test everything has installed properly, activate the venv and run tests.
+5. To test everything has installed properly, activate the venv and run tests.
 
     ```bash
     source .venv/bin/activate
@@ -163,11 +164,14 @@ The sync is done with git, to perform the sync, you will need to have a git acco
 3. Create a repo on github with the same project name.
 
 4. Setup the remote and push.
+   ```bash
+   git remote add origin git@github.com:Plarium-Repo/your-repo-name.git
+   git push -u origin main
 
-5. Go to databricks, under **Workspace** > **Repos** > **Your username** you should see a screen like this (with no repos):![databricks repos](./readme-images/databricks%20repos.png)
+6. Go to databricks, under **Workspace** > **Repos** > **Your username** you should see a screen like this (with no repos):![databricks repos](./readme-images/databricks%20repos.png)
 
-6. Click **Create** > **Repo**, you should see a screen like this:![databricks add repo](./readme-images/databricks%20add%20repo.png)
-7. Fill up the information:
+7. Click **Create** > **Repo**, you should see a screen like this:![databricks add repo](./readme-images/databricks%20add%20repo.png)
+8. Fill up the information:
    - Under **Git repository URL** paste the url of your repo.
    - Under **Git provider** choose `GitHub`
    - Under **Repository name** we recommend to write the name of the repo as it appears on GitHub. This is equivalent to `git clone`, if you supply another name the repo will be cloned under that name.
