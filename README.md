@@ -183,3 +183,6 @@ The sync is done with git, to perform the sync, you will need to have a git acco
 2. Start a machine or choose one that is running. This can take some time... ☕️.
 3. Run the 2 cells, it should print "Hello World!". You should see something like this:
 ![result](./readme-images/toy%20project%20example.png)
+
+
+
