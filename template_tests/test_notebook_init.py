@@ -15,7 +15,7 @@ class TestFindSrc(unittest.TestCase):
         
         Will return the 'src' directory as a Path object."""
         
-        DIRECTORY_CONSTANTS = ["src", "notebooks", "tests", "data", "reports"]
+        DIRECTORY_CONSTANTS = ["src", "notebooks", "tests"]
 
         # to print the path
         tree = [list(current_path.parts)[-1]]
