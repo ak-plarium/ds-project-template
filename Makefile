@@ -21,14 +21,22 @@ contributor-setup:
 	@echo "📦 installing dev dependencies"
 	$(PIP) install --upgrade pip
 	$(PIP) install -r contribution_requirements.txt
+	@echo "📦 Done installing dev dependencies"
 
 	@echo "⚒️  Setting up pre-commit hooks"
 	$(VENV)/bin/pre-commit install
 	$(VENV)/bin/pre-commit install --hook-type pre-push
+	@echo "⚒️  Done"
+
+	@echo "⚒️  Pointing git's excludesFile to .template_gitignore"
+	@git config core.excludesFile .template_gitignore
+	@echo "⚒️  Done"
 
 	@echo "✅ Setup complete."
-	@echo "ℹ️  activate the venv with: source .venv/bin/activate"
-	@echo "ℹ️  run all tests to check everything is in order with: pytest" 
+	@echo "ℹ️  activate the venv with:"
+	@echo "         source .venv/bin/activate"
+	@echo "ℹ️  run all tests to check everything is in order with:"
+	@echo "         pytest"
 
 clean:
 	@echo "🧹 Removing virtual environment and artifacts..."
