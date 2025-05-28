@@ -1,22 +1,19 @@
 def __attach_src():
-    """spots if the runtime is in databricks or local
-        if it's databricks, we piggy back on the path to the root of the project and add the src as a valid path
-        if local, we inform and do nothing
-        if neither, we raise a warning
+    """
+    searches up the directory tree until it research the root and attaches /src to sys.path
+    only needs to run in DataBricks
+    it assumes the root will always contain ['notebooks', 'src', 'tests']
     """
     from pathlib import Path
     import sys
-    from importlib.metadata import distributions
+    import os
+
+    project_root_members = ['notebooks', 'src', 'tests']
+    current_path = Path(os.getcwd()).resolve()
     
-    modules = [_.metadata['Name'] for _ in distributions()]
+    for parent in current_path.parents:
+        if all((parent / _).exists() for _ in project_root_members):
+            path = parent  / 'src'
+            sys.path.insert(0, str(path))
+            print(f"Added '{path}' to sys.path")
     
-    if 'databricks-sdk' in modules:
-        path = [Path(_).resolve() for _ in sys.path if Path(_).resolve().parts[-1] == '{{cookiecutter.directory_name}}'][0]
-        path = path / "src"
-        sys.path.insert(0, str(path))
-        print(f"added '{path}' to sys.path")
-    elif '{{cookiecutter.directory_name}}' in modules:
-        print(f"editable version detected, ignoring")
-    else:
-        from warnings import warn
-        warn(f"unidentified runtime: your src path might not be attached to sys.path")
