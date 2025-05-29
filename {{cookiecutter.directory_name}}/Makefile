@@ -5,7 +5,13 @@ PYTHON_VERSION = {{cookiecutter.python_version}}
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 
-.PHONY: help setup venv install-dev pre-commit clean build sync-repo _sync-repo-internal
+.PHONY: help setup venv install-dev pre-commit clean build \
+	sync-repo \
+	_sync-repo-internal \
+	_init-git-and-commit \
+	_create-remote-repo-and-push \
+	_sync-repo-to-databricks \
+	print-repo-url
 
 help:
 	@echo "{{cookiecutter.directory_name}} repo common tasks:"
@@ -31,14 +37,16 @@ setup:
 	@echo "ℹ️  activate the venv with: source .venv/bin/activate"
 	@echo "ℹ️  run all tests to check everything is in order with: pytest" 
 
-_sync-repo-internal:
+
+_init-git-and-commit:
 	@echo "⚒️ initating git and commiting first commit ..."
 	@git init
 	@git add *
 	@git add .gitignore
 	@git add .pre-commit-config.yaml
 	@git commit -m "init"
-	
+
+_create-remote-repo-and-push:
 	@echo "⚒️ creating remote ..."
 	@gh repo create {{cookiecutter.directory_name}} \
 		--private \
@@ -46,19 +54,39 @@ _sync-repo-internal:
 		--description "{{cookiecutter.description}}" \
 		--disable-wiki \
 		--disable-issues;
-	
+
 	@echo "⚒️ pushing to remote ..."
 	@git remote add origin git@{{cookiecutter.git_host}}:$(gh api user --jq .login)/{{cookiecutter.directory_name}}.git
 	@git branch -M main
 	@git push -u origin main
 
+_sync-repo-to-databricks:
 	@echo "⚒️ syncing with databricks ..."
 	@databricks repos create \ 
 		--json '{ \
 			"url": "https://github.com/$(gh api user --jq .login)/{{cookiecutter.directory_name}}.git", \
 			}' \
 		--path /Repos/{{cookiecutter.author_email}}/{{cookiecutter.directory_name}}
-	
+
+print-repo-url:
+	@REPO_ROW=$$(databricks repos list | grep "{{cookiecutter.directory_name}}"); \
+	if [ -z "$$REPO_ROW" ]; then \
+		echo "❌ Repository not found on databricks: $$REPO_NAME"; \
+		exit 1; \
+	fi; \
+	REPO_ID=$$(echo "$$REPO_ROW" | awk '{print $$1}'); \
+	DB_HOST_URL=$$(databricks auth describe | grep "Host:" | awk '{print $$2}'); \
+	DB_ACCOUNT_ID=$$(echo $$DB_HOST_URL | awk -F'//' '{print $$2}' | awk -F'.' '{print $$1}'); \
+	echo "✅ All done, go visit your new repo at:\n\n		$$DB_HOST_URL/browse/folders/$$REPO_ID?o=$$DB_ACCOUNT_ID\n";
+
+_sync-repo-internal:
+	@$(MAKE) _init-git-and-commit
+
+	@$(MAKE) _create-remote-repo-and-push
+
+	@$(MAKE) _sync-repo-to-databricks	
+
+	@$(MAKE) print-repo-url
 	
 
 # Will create a git repo, sync it with github, and sync it with databricks
@@ -70,7 +98,6 @@ sync-repo:
 		echo "⚠️ You can delete the .git directory, but make sure you don't have the repo on github and databricks"; \
 	fi
 	
-
 
 venv:
 	@echo "⚒️  Creating venv in $(VENV)..." 
