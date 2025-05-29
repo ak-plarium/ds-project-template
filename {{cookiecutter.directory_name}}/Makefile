@@ -29,7 +29,6 @@ setup:
 	
 	@$(MAKE) install-dev 
 
-	@$(MAKE) pre-commit
 	@echo "✅ Setup complete."
 	@echo "ℹ️  activate the venv with: source .venv/bin/activate"
 	@echo "ℹ️  run all tests to check everything is in order with: pytest" 
