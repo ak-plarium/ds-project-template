@@ -5,7 +5,7 @@ PYTHON_VERSION = {{cookiecutter.python_version}}
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 
-.PHONY: help setup venv install-dev pre-commit clean build
+.PHONY: help setup venv install-dev pre-commit clean build sync-repo _sync-repo-internal
 
 help:
 	@echo "{{cookiecutter.directory_name}} repo common tasks:"
@@ -30,6 +30,47 @@ setup:
 	@echo "✅ Setup complete."
 	@echo "ℹ️  activate the venv with: source .venv/bin/activate"
 	@echo "ℹ️  run all tests to check everything is in order with: pytest" 
+
+_sync-repo-internal:
+	@echo "⚒️ initating git and commiting first commit ..."
+	@git init
+	@git add *
+	@git add .gitignore
+	@git add .pre-commit-config.yaml
+	@git commit -m "init"
+	
+	@echo "⚒️ creating remote ..."
+	@gh repo create {{cookiecutter.directory_name}} \
+		--private \
+		--team pdp-ds \
+		--description "{{cookiecutter.description}}" \
+		--disable-wiki \
+		--disable-issues;
+	
+	@echo "⚒️ pushing to remote ..."
+	@git remote add origin git@{{cookiecutter.git_host}}:$(gh api user --jq .login)/{{cookiecutter.directory_name}}.git
+	@git branch -M main
+	@git push -u origin main
+
+	@echo "⚒️ syncing with databricks ..."
+	@databricks repos create \ 
+		--json '{ \
+			"url": "https://github.com/$(gh api user --jq .login)/{{cookiecutter.directory_name}}.git", \
+			}' \
+		--path /Repos/{{cookiecutter.author_email}}/{{cookiecutter.directory_name}}
+	
+	
+
+# Will create a git repo, sync it with github, and sync it with databricks
+sync-repo:
+	@if [ -d .git ]; then \
+		$(MAKE) _sync-repo-internal ; \
+	else \
+		echo "⚠️ git already initiated, aborting."; \
+		echo "⚠️ You can delete the .git directory, but make sure you don't have the repo on github and databricks"; \
+	fi
+	
+
 
 venv:
 	@echo "⚒️  Creating venv in $(VENV)..." 
