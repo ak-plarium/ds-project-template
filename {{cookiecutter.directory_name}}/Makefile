@@ -11,7 +11,7 @@ PIP=$(VENV)/bin/pip
 	_init-git-and-commit \
 	_create-remote-repo-and-push \
 	_sync-repo-to-databricks \
-	print-repo-url
+	print-databricks-repo-url
 
 help:
 	@echo "{{cookiecutter.directory_name}} repo common tasks:"
@@ -68,7 +68,7 @@ _sync-repo-to-databricks:
 			}' \
 		--path /Repos/{{cookiecutter.author_email}}/{{cookiecutter.directory_name}}
 
-print-repo-url:
+print-databricks-repo-url:
 	@REPO_ROW=$$(databricks repos list | grep "{{cookiecutter.directory_name}}"); \
 	if [ -z "$$REPO_ROW" ]; then \
 		echo "❌ Repository not found on databricks: $$REPO_NAME"; \
@@ -86,7 +86,7 @@ _sync-repo-internal:
 
 	@$(MAKE) _sync-repo-to-databricks	
 
-	@$(MAKE) print-repo-url
+	@$(MAKE) print-databricks-repo-url
 	
 
 # Will create a git repo, sync it with github, and sync it with databricks
