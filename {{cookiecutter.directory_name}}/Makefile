@@ -15,7 +15,7 @@ PIP=$(VENV)/bin/pip
 
 help:
 	@echo "{{cookiecutter.directory_name}} repo common tasks:"
-	@echo "  make setup        - Create git, venv and install dev dependencies"
+	@echo "  make setup        - Create venv and install dev dependencies"
 	@echo "  make venv         - Create a virtual environment"
 	@echo "  make install-dev  - Install in editable mode with [dev] extras"
 	@echo "  make pre-commit   - Install and configure pre-commit hooks"
@@ -24,9 +24,6 @@ help:
 
 setup: 
 	@echo "🔧 {{cookiecutter.directory_name}} developer setup"
-	@echo "⚒️ setting up git (only if it does not exist yet)"
-	
-	@[ -d .git ] || git init
 	
 	@$(MAKE) venv
 	
@@ -82,6 +79,8 @@ print-databricks-repo-url:
 _sync-repo-internal:
 	@$(MAKE) _init-git-and-commit
 
+	@$(MAKE) pre-commit
+
 	@$(MAKE) _create-remote-repo-and-push
 
 	@$(MAKE) _sync-repo-to-databricks	
@@ -91,6 +90,8 @@ _sync-repo-internal:
 
 # Will create a git repo, sync it with github, and sync it with databricks
 sync-repo:
+	@echo "⚒️ setting up git (only if it does not exist yet)"
+	@[ -d .git ] || git init
 	@if [ -d .git ]; then \
 		$(MAKE) _sync-repo-internal ; \
 	else \
@@ -98,7 +99,6 @@ sync-repo:
 		echo "⚠️ You can delete the .git directory, but make sure you don't have the repo on github and databricks"; \
 	fi
 	
-
 venv:
 	@echo "⚒️  Creating venv in $(VENV)..." 
 	@test -d $(VENV) || python$(PYTHON_VERSION) -m venv $(VENV)
