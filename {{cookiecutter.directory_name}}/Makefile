@@ -5,13 +5,12 @@ PYTHON_VERSION = {{cookiecutter.python_version}}
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 
-.PHONY: help setup venv install-dev pre-commit clean build \
-	sync-repo \
+.PHONY: help setup venv install-dev pre-commit clean build sync-repo print-databricks-repo-url \
 	_sync-repo-internal \
 	_init-git-and-commit \
 	_create-remote-repo-and-push \
 	_sync-repo-to-databricks \
-	print-databricks-repo-url
+	
 
 help:
 	@echo "{{cookiecutter.directory_name}} repo common tasks:"
@@ -30,8 +29,9 @@ setup:
 	@$(MAKE) install-dev 
 
 	@echo "✅ Setup complete."
-	@echo "ℹ️  activate the venv with: source .venv/bin/activate"
-	@echo "ℹ️  run all tests to check everything is in order with: pytest" 
+	@echo "ℹ️  activate the venv with: \n\n\t source .venv/bin/activate \n"
+	@echo "ℹ️  run all tests to check everything is in order with: \n\n\t pytest \n"
+	@echo "ℹ️  sync with github+databricks using: \n\n\t make sync-repo \n"
 
 
 _init-git-and-commit:
@@ -46,23 +46,21 @@ _create-remote-repo-and-push:
 	@echo "⚒️ creating remote ..."
 	@gh repo create {{cookiecutter.directory_name}} \
 		--private \
-		--team pdp-ds \
 		--description "{{cookiecutter.description}}" \
 		--disable-wiki \
 		--disable-issues;
 
 	@echo "⚒️ pushing to remote ..."
-	@git remote add origin git@{{cookiecutter.git_host}}:$(gh api user --jq .login)/{{cookiecutter.directory_name}}.git
+	@git remote add origin git@{{cookiecutter.git_host}}:$$(gh api user --jq .login)/{{cookiecutter.directory_name}}.git
 	@git branch -M main
 	@git push -u origin main
 
 _sync-repo-to-databricks:
 	@echo "⚒️ syncing with databricks ..."
-	@databricks repos create \ 
-		--json '{ \
-			"url": "https://github.com/$(gh api user --jq .login)/{{cookiecutter.directory_name}}.git", \
-			}' \
-		--path /Repos/{{cookiecutter.author_email}}/{{cookiecutter.directory_name}}
+	@_USER_=$$(gh api user --jq .login); \
+	echo "{ \n\t\"url\": \"https://github.com/$$_USER_/ds-repo-example.git\",\n\t\"provider\": \"gitHub\"\n }" > _repo.json; \
+	databricks repos create --json @_repo.json --path /Repos/aviad.klein@plarium.com/ds-repo-example;
+	@rm _repo.json
 
 print-databricks-repo-url:
 	@REPO_ROW=$$(databricks repos list | grep "{{cookiecutter.directory_name}}"); \
@@ -78,16 +76,15 @@ print-databricks-repo-url:
 _sync-repo-internal:
 	@$(MAKE) _init-git-and-commit
 
-	@$(MAKE) pre-commit
-
 	@$(MAKE) _create-remote-repo-and-push
+
+	@$(MAKE) pre-commit
 
 	@$(MAKE) _sync-repo-to-databricks	
 
 	@$(MAKE) print-databricks-repo-url
 	
 
-# Will create a git repo, sync it with github, and sync it with databricks
 sync-repo:
 	@echo "⚒️ setting up git (only if it does not exist yet)"
 	@[ -d .git ] || git init
@@ -125,4 +122,3 @@ build:
 	@echo "🛞 Building wheel..."
 	@python -m build --wheel
 	@echo "✅ Wheel created in ./dist/"
-
