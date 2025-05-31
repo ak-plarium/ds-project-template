@@ -1,0 +1,31 @@
+{
+    "num_workers": 0,
+    "cluster_name": "{{cookiecutter.directory_name}} ml-single-sm",
+    "spark_version": "15.4.x-cpu-ml-scala2.12",
+    "spark_conf": {
+        "spark.master": "local[*, 4]",
+        "spark.databricks.cluster.profile": "singleNode"
+    },
+    "gcp_attributes": {
+        "google_service_account": "databricks-ml@pdp-prod.iam.gserviceaccount.com",
+        "zone_id": "auto"
+    },
+    "ssh_public_keys": [],
+    "custom_tags": {
+        "ResourceClass": "SingleNode",
+        "x-databricks-nextgen-cluster": "true",
+        "TeamCode": "ml",
+        "CoresCount": "2",
+        "Size": "sm"
+    },
+    "spark_env_vars": {
+        "team_name": "pdp-ml"
+    },
+    "autotermination_minutes": 30,
+    "init_scripts": [
+        {
+            "workspace": {
+                "destination": "/Workspace/Shared/DS_Share/Init scripts/{{cookiecutter.directory_name}}/cluster_init_script.sh"
+            }
+        }]
+}
