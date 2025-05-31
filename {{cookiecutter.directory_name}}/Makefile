@@ -28,8 +28,10 @@ setup:
 
 	@$(MAKE) pre-commit
 	@echo "✅ Setup complete."
-	@echo "ℹ️  activate the venv with: source .venv/bin/activate"
-	@echo "ℹ️  run all tests to check everything is in order with: pytest" 
+	@echo "ℹ️  activate the venv with:"
+	@echo "         source .venv/bin/activate"
+	@echo "ℹ️  run all tests to check everything is in order with:"
+	@echo "         pytest"
 
 venv:
 	@echo "⚒️  Creating venv in $(VENV)..." 

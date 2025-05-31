@@ -15,7 +15,6 @@ The template is using [cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.
 {{cookiecutter.project_name}}
 ├── data
 ├── notebooks
-│   ├── _init_.ipynb
 │   └── example.ipynb
 ├── reports
 ├── src
@@ -25,6 +24,7 @@ The template is using [cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.
 ├── tests
 │   ├── __init__.py
 │   └── test_util.py
+├── __util__.py
 ├── pyproject.toml
 ├── pytest.ini
 ├── Makefile
@@ -183,3 +183,29 @@ The sync is done with git, to perform the sync, you will need to have a git acco
 2. Start a machine or choose one that is running. This can take some time... ☕️.
 3. Run the 2 cells, it should print "Hello World!". You should see something like this:
 ![result](./readme-images/toy%20project%20example.png)
+
+## Creating a job on DataBricks that points to your repo and branch
+
+Once your repo is synced, and you have a notebook you want to put in a workflow:
+
+1. On DataBricks go to **Workflows** > **Create** > **Job**
+2. Fill up:
+   1. Task name
+   2. Type: Choose Notebook
+   3. Source: Choose Git Provider
+      1. Click **Edit**, a pop up form will appear
+      2. Paste the github-url
+      3. Choose the right git reference for your project (recommended: main branch)
+      4. Click **Confirm**
+      ![provider info](/readme-images/Git%20provider%20info.png)
+      
+   4. Path: write the path from the root of the directory: i.e. `notebooks/example` without file extensions
+   4. Compute: Choose the right machine for the job (TBD more on this later). Your form should look like this:
+   ![form](/readme-images/set%20up%20toy%20job.png)
+   5. Click **create task**
+   6. On the right hand panel under Schedules and triggers you can schedule or set a trigger. Or.. just click **Run now** and see if the job runs.
+   If all works well you should see:
+   ![job success](/readme-images/job%20success.png)
+
+
+
