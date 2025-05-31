@@ -9,6 +9,8 @@ It allows for:
 
 The template is using [cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/index.html).
 
+<a href="https://drive.google.com/file/d/1TPRAH1O-5vMvt889Of2PI0s1_mPCPrvo/view?usp=drive_link" target="_blank">See Example</a>
+
 ## Template structure
 
 ```
@@ -205,9 +207,6 @@ make sync-repo
 ```
 
 Follow the instructions, it should print a lot of logs and finally show you a link to your databricks repo:
-
-<iframe width="560" height="315" src="https://drive.google.com/file/d/1TPRAH1O-5vMvt889Of2PI0s1_mPCPrvo/view?usp=drive_link" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 
 
 ### Test it
