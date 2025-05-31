@@ -1,6 +1,6 @@
 # Contributing to the template
 
-## Contributing Guidelines(!!!)
+## ⚠️Contributing Guidelines(!!!)⚠️
 
 - Do not commit directly to `main`.
 - Create feature branches off of `develop`.
@@ -40,4 +40,21 @@ This repo contains some logic that should be tested, read further if you wich to
    ```
    pytest
    ```
+
+## Checking out a new version of the template
+
+When you have the template created and you wish to check that everything works fine, 
+It means that:
+- You have branched off `develop` into a new branch
+- You pushed your new branch to github
+
+you can use cookiecutter's `checkout` flag to download the template from your branch
+
+```bash
+cookiecutter [THIS-REPO-URL] --checkout [BRANCH_NAME]
+```
+
+
+
+
 
