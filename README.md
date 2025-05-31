@@ -1,6 +1,6 @@
 # Plarium's DS Project Template
 
-This template is the agreed upon structure for DS projects for Plarium's DS.<br>
+This template is the agreed upon structure for DS projects for Plarium's Data Science team.<br><br>
 It allows for:
 - Developing sources offline in an IDE of one's choice.
 - Working with DataBricks for extra fire-power 🔫.
@@ -47,21 +47,25 @@ Running `make help` will detail the default actions:
   make build        - Build the package for distribution.
 ```
 
-### `notebooks/_ini_.ipynb`
+### Using notebooks
 
-Part of the setup to work both locally and remotely with DataBricks.<br>
-Every notebook's first cell must include:
+The main idea of this mode of work is to allow for working online and offline.<br>
+Locally, we use an ["editable"](https://setuptools.pypa.io/en/latest/userguide/development_mode.html) version which installs the `src` directory under the `cookicutter.project_slug` alias.<br>
+Remotely however, we cannot perform an editable install, instead we use the code below at the top of every notebook:
 
 ```python
-%run "./_init_.py"
+try:
+   from __util__ import __attach_src; __attach_src()
+except ModuleNotFoundError as e:
+   if e.msg != \"No module named '__util__'\":
+      raise e
 ``` 
 
-This will point the sources path to the `src` directory allowing for importing directly from sources.
+Locally this code will do nothing. On the remote it will add the `src` path to `sys.path`
 
-Locally, it will have no use. Proper installation using `make setup` will install the sources in ["editable"](https://setuptools.pypa.io/en/latest/userguide/development_mode.html) mode.
+### Unit-testing
 
-### pytest
-
+We encourage the use of unit-testing. As a DS writes code in notebooks, anything reuable should be moved to `src` and should be tested.
 We are using [pytest](https://docs.pytest.org/en/stable/) for unittest discovery. The template include a simple unittest to check if everything works.
 
 ### `.pre-commit-config.yaml`
@@ -71,61 +75,21 @@ The hooks we have ensure:<br>
 1. [`nbstripout`](https://github.com/kynan/nbstripout) to clean notebooks before they are pushed to a git repo. To keep results, make sure you create a report.
 2. Running tests before we push to git.
 
-## Using the template
+## Pre-requisites
 
-1. We recommend to install python 3.11 as it is the native distribution on DataBricks:
+### What to install
 
-   ```
-   brew install python@3.11
-   ```
-   If you don't have `brew` installed visit [here](https://brew.sh/).
+| # | App               | What is it?                                                                                    | Installation instructions            |
+|---|-------------------|------------------------------------------------------------------------------------------------|--------------------------------------|
+| 1 | `brew`            | macOS package manager, it will help install a lot of stuff                                     | Go [here](https://brew.sh/)          |
+| 2 | python3.11        | This will be your global python interpreter<br> the version is aligned with the DataBricks one | ```bash brew install python@3.11 ``` |
+| 3 | make              | An automation tool for running tasks                                                           | ```bash brew install make ```        |
+| 4 | git               | You should know                                                                                | ```bash brew install git ```         |
+| 5 | gh                | GitHub client                                                                                  | ```bash brew install gh ```          |
+| 6 | databricks client | Controls your databricks account from command line                                             | ```bash brew tap databricks/tap; brew install databricks``` |
+| 7 | cookiecutter      | Allows to create projects from templates                                                       | ```bash python3.11 -m pip install cookiecutter``` |
 
-   
-1. [Install cookiecutter](https://cookiecutter.readthedocs.io/en/1.7.2/installation.html). it should NOT be installed in a specific virtual environment, rather it should be installed in the global python you have on your machine.
-
-    ```bash
-    python3.11 -m pip install cookiecutter
-    ```
-
-2. Go to the directory where your project root will be created and run:
-
-    ```bash
-    cookiecutter https://github.com/ak-plarium/ds-project-template
-    ```
-
-    You will be prompted to fill the details of the project - **Note:** to use an underscore (`_`) instead of a hyphen (`-`) in `project_slug`.
-    
-
-4. Next, `cd` into your new project directoy and run `make setup`. <br>
-    ```bash
-    cd [project_directory]
-    make setup
-    ```
-
-    This will:<br>
-    1. Initiate a git repo (Only if you have not already)
-    2. Create a venv
-    3. Install requirements from `pyporoject.toml` and the package itself as an editable copy.
-    4. Install pre-commit and setup the local hooks.
-
-5. To test everything has installed properly, activate the venv and run tests.
-
-    ```bash
-    source .venv/bin/activate
-    pytest
-    ```
-
-    You should see:
-    ```bash
-    .                           [100%]
-    1 passed in 0.01s
-    ```
-
-## Syncing your project with DataBricks
-
-The sync is done with git, to perform the sync, you will need to have a git account.
-
-### Git SSH <> DataBricks setup
+### Setting up your GitHub account
 
 1. If you have not done so, set a ssh key for github, following the instructions [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
@@ -137,45 +101,114 @@ The sync is done with git, to perform the sync, you will need to have a git acco
    - Click the `Confgire SSO` drop down menu, and click authorize here:
 ![Authorization popup](./readme-images/authorization.png)
 
-2. Create a new repo on DataBricks with the **same name as your project name**, push the local repo to the remote.
+### Setting up GitHub client
 
-3. Create a **Personal Access Token** for DataBricks so that it can read your repos. 
-   - Go to: **Settings** > **Developer Settings** > **Personal access tokens**
-   - Choose **Tokens (classic)**. Click **Generate new token** > **Generate new token (classic)**. 
-   - Under the **Note** write `databricks` 
-   - Under **Expiration** choose `No Expiration`
-   - Under **Select Scopes** mark all of the `repo` scope. This is how your screen should look like this: ![pat setup](./readme-images/pat%20setup.png)
-   - Scroll down and click **Generate token**
-   - Copy the token from here:![github token](./readme-images/copy%20token.png)
-   - Click the **Configue SSO** and authorize (like you did with the SSH token).
-   - Go to databricks, under your profile choose **Settings** > **Linked accounts**
-   - Under **Git integration**, set **Git provider** to `GitHub`
-   - Choose **Personal access token**
-   - Under **Git provider username or email** enter your git username
-   - Paste the token from github under . Your screen should look like this: ![github token setup](./readme-images/github%20token%20setup.png)
-   - Click **Save**. Yay! 🥳
+In a terminal, run:
 
-### Sync a toy project
+```bash
+gh auth login
+```
+Fill up the interactive form like so:
 
-1. Create some project using the cookiecutter template.
+| # | Question               | Answer |
+|---|------------------------|--------|
+| 1 | ? Where do you use GitHub? | Choose: `GitHub.com` |
+| 2 |  What is your preferred protocol for Git operations on this host? | Choose: `SSH` |
+| 3 | ? Upload your SSH public key to your GitHub account? | You should see the path to your ssh key | ? Title for your SSH key: | Use the default `GitHub CLI` |
+| 4 | ? How would you like to authenticate GitHub CLI? | Choose `Login with a web browser` |
 
-2. Run `make setup` from the project folder.
+Follow the rest of the CLI instructions, it will take you to github with a code to verify your account vai Okta.
+```bash
+! First copy your one-time code: XXXX-YYYY
+Press Enter to open https://github.com/login/device in your browser... 
+```
 
-3. Create a repo on github with the same project name.
+A successful message should look like this:
+```bash
+✓ Authentication complete.
+- gh config set -h github.com git_protocol ssh
+✓ Configured git protocol
+✓ SSH key already existed on your GitHub account: /Users/YOUR-PLARIUM-USERNAME/.ssh/id_mac_key_ed25519.pub
+✓ Logged in as YOUR-GITHUB-USERNAME
+```
 
-4. Setup the remote and push.
-   ```bash
-   git remote add origin git@github.com:Plarium-Repo/your-repo-name.git
-   git push -u origin main
+### Syncing GitHub with DataBricks
 
-6. Go to databricks, under **Workspace** > **Repos** > **Your username** you should see a screen like this (with no repos):![databricks repos](./readme-images/databricks%20repos.png)
+Create a **Personal Access Token** for DataBricks 
+- Go to: **Settings** > **Developer Settings** > **Personal access tokens**
+- Choose **Tokens (classic)**. Click **Generate new token** > **Generate new token (classic)**. 
+- Under the **Note** write `databricks` 
+- Under **Expiration** choose `No Expiration`
+- Under **Select Scopes** mark all of the `repo` scope. This is how your screen should look like this: ![pat setup](./readme-images/pat%20setup.png)
+- Scroll down and click **Generate token**
+- Copy the token from here:![github token](./readme-images/copy%20token.png)
+- Click the **Configue SSO** and authorize (like you did with the SSH token).
+- Go to databricks, under your profile choose **Settings** > **Linked accounts**
+- Under **Git integration**, set **Git provider** to `GitHub`
+- Choose **Personal access token**
+- Under **Git provider username or email** enter your git username
+- Paste the token from github under . Your screen should look like this: ![github token setup](./readme-images/github%20token%20setup.png)
+- Click **Save**. Yay! 🥳
 
-7. Click **Create** > **Repo**, you should see a screen like this:![databricks add repo](./readme-images/databricks%20add%20repo.png)
-8. Fill up the information:
-   - Under **Git repository URL** paste the url of your repo.
-   - Under **Git provider** choose `GitHub`
-   - Under **Repository name** we recommend to write the name of the repo as it appears on GitHub. This is equivalent to `git clone`, if you supply another name the repo will be cloned under that name.
-   - Click **Create Repo**, your toy project should now be available.
+
+### Setting up the DataBricks CLI
+
+In a terminal, run:
+
+```bash
+databricks auth login --host https://2358571090677488.8.gcp.databricks.com --profile [PLARIUM EMAIL]
+```
+
+Follow the instructions.
+
+## Creating a new project using the template
+
+1. Go to the directory where your project root will be created and run:
+
+    ```bash
+    cookiecutter https://github.com/ak-plarium/ds-project-template
+    ```
+
+    You will be prompted to fill the details of the project - **Note:** to use an underscore (`_`) instead of a hyphen (`-`) in `project_slug`.
+    
+
+2. Next, `cd` into your new project directoy and run `make setup`. <br>
+    ```bash
+    cd [project_directory]
+    make setup
+    ```
+
+    This will:<br>
+    1. Create a venv
+    2. Install requirements from `pyporoject.toml` and the package itself as an editable copy.
+
+3. To test everything has installed properly, activate the venv and run tests.
+
+    ```bash
+    source .venv/bin/activate
+    pytest
+    ```
+
+    You should see that 1 test has passed:
+    ```bash
+    .                           [100%]
+    1 passed in 0.01s
+    ```
+
+### Syncing with github and databricks
+
+This is the only place where automation will touch your git, and thus it requires your approval.
+In the terminal, run:
+
+```bash
+make sync-repo
+```
+
+Follow the instructions, it should print a lot of logs and finally show you a link to your databricks repo:
+
+<iframe width="560" height="315" src="https://drive.google.com/file/d/1TPRAH1O-5vMvt889Of2PI0s1_mPCPrvo/view?usp=drive_link" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
 
 ### Test it
 
