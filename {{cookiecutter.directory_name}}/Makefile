@@ -179,16 +179,17 @@ build:
 
 
 create-cluster:
-	@echo "⚒️  $(STYLE_TITLE)Checking if a cluster already exists for this project...$(STYLE_RESET)"
-	@CLUSTERS=$$(databricks clusters list | grep "{{cookiecutter.directory_name}}"); \
-	CLUSTER_EXISTS=$$(echo $$CLUSTERS | wc -l | xargs) ;\
-	if [ "$$CLUSTER_EXISTS" = "0" ]; then \
-		echo "ℹ️ $(STYLE_TITLE)Cluster related to '{{cookiecutter.directory_name}}' not found. Creating..."; \
-		
-	else \
-		echo "⚠️ $(STYLE_WARNING)Found these related clusters:$(STYLE_RESET)"; \
-		echo ""; \
-		echo $$CLUSTERS; \
-		echo ""; \
-		echo "⚠️ $(STYLE_WARNING) Aborting.$(STYLE_RESET)";
+	@echo "⚠️ $(STYLE_WARNING)Work in Progress$(STYLE_RESET)"
+#	@echo "⚒️  $(STYLE_TITLE)Checking if a cluster already exists for this project...$(STYLE_RESET)"
+#	@CLUSTERS=$$(databricks clusters list | grep "{{cookiecutter.directory_name}}"); \
+#	CLUSTER_EXISTS=$$(echo $$CLUSTERS | wc -l | xargs) ;\
+#	if [ "$$CLUSTER_EXISTS" = "0" ]; then \
+#		echo "ℹ️ $(STYLE_TITLE)Cluster related to '{{cookiecutter.directory_name}}' not found. Creating..."; \
+#		
+#	else \
+#		echo "⚠️ $(STYLE_WARNING)Found these related clusters:$(STYLE_RESET)"; \
+#		echo ""; \
+#		echo $$CLUSTERS; \
+#		echo ""; \
+#		echo "⚠️ $(STYLE_WARNING) Aborting.$(STYLE_RESET)";
 	
